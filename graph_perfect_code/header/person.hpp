@@ -7,13 +7,13 @@
 #include <polynomial.hpp>
 #include <dynamic_array.hpp>
 
-int64 vertexCount = 50ll;
+int64 vertexCount = 5*10ll;
 
 dynamic_array<integer> solution(const dynamic_array<int64>& private_key)
 {
-	int64 size = private_key.size(), i = 0, j = 0;
+	int64 i = 0, j = 0;
 
-	dynamic_array<integer> private_sol(size, 0ll);
+	dynamic_array<integer> private_sol(vertexCount, 0ll);
 
 	integer* private_sol_ptr = private_sol.data();
 
@@ -42,7 +42,7 @@ public:
 
 	Person()
 	{
-		_private_key = random_int(0, vertexCount, vertexCount / 2);
+		_private_key = random_distinct_int(0, vertexCount-1, vertexCount / 5);
 		_private_sol = solution(_private_key);
 		_public_key = _private_key;
 
@@ -53,6 +53,10 @@ public:
 	graph public_key()const
 	{
 		return _public_key;
+	}
+	void private_key()const
+	{
+		std::cout << "(Graph perfect code) : \n " << _private_key;
 	}
 
 	std::string message(polynomial<integer>& pol)const
@@ -74,7 +78,7 @@ public:
 
 void input(std::string& message)
 {
-	std::cout << "\nEnter a message : "; std::getline(std::cin, message);
+	std::cout << "\n\nEnter a message : "; std::getline(std::cin, message);
 }
 
 dynamic_array<std::string> var_vec(int64 n)

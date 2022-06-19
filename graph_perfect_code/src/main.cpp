@@ -67,11 +67,15 @@ int main()
 
 	public_key = Alice.public_key();
 
+	std::cout << "\n\nPublic Key : " << public_key;
+
+	std::cout << "\n\nprivate Key";  Alice.private_key();
+
 	int64 edgeCount = public_key.edge_count();
 
-	//std::string message;  input(message);
+	std::string message;  input(message);
 
-	//integer message_num = ConvertMessageToInteger(message);
+	integer message_num = ConvertMessageToInteger(message);
 
 	dynamic_array<polynomial<integer>> B1; B1.reserve(1 * vertexCount);
 	dynamic_array<polynomial<integer>> B2; B2.reserve(edgeCount * (2 * edgeCount - 1) / 2);
@@ -81,37 +85,28 @@ int main()
 	GenerateB1(B1, var);
 	GenerateB2(B2, var);
 
-	std::cout << B2;
+	polynomial<integer> sum_pol1 = { 0ll, var };
+	polynomial<integer> sum_pol2 = { 0ll, var };
 
-	//polynomial<integer> sum_pol1 = { 0ll, var };
-	//polynomial<integer> sum_pol2 = { 0ll, var };
-	//polynomial<integer> sum_pol3 = { 0ll, var };
+	for (int64 i = 0; i < vertexCount; ++i)
+	{
+		sum_pol1 += B1[i];
+	}
 
-	//for (int64 i = 0; i < vertexCount; ++i)
-	//{
-	//	sum_pol1 += B1[i];
-	//}
+	for (int64 i = 0; i < 3 * vertexCount; ++i)
+	{
+		sum_pol2 += B2[i];
+	}
 
-	//for (int64 i = 0; i < 3 * vertexCount; ++i)
-	//{
-	//	sum_pol2 += B2[i];
-	//}
+	polynomial<integer> cipher_text =
+		sum_pol1 * random_polynomial(20) +
+		sum_pol2 * random_polynomial(20) + polynomial<integer>(message_num, var);
 
-	//for (int64 i = 0; i < edgeCount; ++i)
-	//{
-	//	sum_pol3 += B3[i];
-	//}
+	std::cout << "Cipher Text is : " << cipher_text;
 
-	//polynomial<integer> cipher_text =
-	//	sum_pol1 * random_polynomial(20) +
-	//	sum_pol2 * random_polynomial(20) +
-	//	sum_pol3 * random_polynomial(20) + polynomial<integer>(message_num, var);
+	std::cout << Alice.message(cipher_text);
 
-	////std::cout << "Cipher Text is : " << cipher_text;
-
-	//std::cout << Alice.message(cipher_text);
-
-	//std::cin.get();
+	std::cin.get();
 
 	return 0;
 

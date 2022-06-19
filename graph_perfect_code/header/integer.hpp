@@ -748,6 +748,28 @@ inline dynamic_array<int64> random_int(int64 start, int64 end, int64 n)
     return Tmp;
 }
 
+inline dynamic_array<int64> random_distinct_int(int64 start, int64 end, int64 n)
+{
+    std::random_device device;
+
+    std::mt19937 rng(device());
+
+    std::uniform_int_distribution<int64> dist(start, end); // distribution in range [start, end]
+
+    dynamic_array<int64> Tmp(n);
+
+    int64* data = Tmp.data(); int64 random;
+
+    dynamic_array<bool> available(end - start + 1, true);
+
+    for (int64 i = 0; i < n; ++i)
+    {
+        available[(random = dist(rng))] ? available[*(data + i) = random] = false : --i;
+    }
+
+    return Tmp;
+}
+
 
 class Int : private dynamic_array<bool>
 {

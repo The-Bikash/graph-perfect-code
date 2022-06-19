@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <initializer_list>
+#include <stdlib.h>
 
 using int64 = long long;
 
@@ -408,6 +409,32 @@ public:
 		}
 
 		arr_siz = 0;
+	}
+
+	constexpr void shuffle()noexcept
+	{
+		// Time complexity O(n)
+
+		int64 last_index = arr_siz - 1;
+
+		int64 rand_index;
+
+		arr_type Tmp;
+
+		srand((unsigned int)time(0));
+
+		while (last_index > 0)
+		{
+			rand_index = rand() % last_index;
+			
+			Tmp = *(arr_ptr + last_index);
+
+			*(arr_ptr + last_index) = *(arr_ptr + rand_index);
+
+			*(arr_ptr + rand_index) = Tmp;
+
+			--last_index;
+		}
 	}
 
 	template<class... Args> arr_type& emplace_back(Args&&... args)

@@ -8,6 +8,28 @@
 using uint = unsigned int;
 using int64 = long long;
 
+dynamic_array<dynamic_array<int64>> my_partition(dynamic_array<int64>& set, const int64& size)
+{
+	dynamic_array<dynamic_array<int64>> Tmp(size);
+
+	set.shuffle();
+	
+	if (set.size() != size * 4)
+	{
+		throw("Error");
+	}
+
+	for (int64 i = 0; i < size; ++i)
+	{
+		for (int64 j = 0; j < 4; ++j)
+		{
+			Tmp[i].push_back(set[i * 4 + j]);
+		}
+	}
+
+	return Tmp;
+}
+
 class graph
 {
 
@@ -34,53 +56,63 @@ public:
 
 	graph(const dynamic_array<int64>& graph_perfect_code)noexcept
 	{
-		int64 i, j, size = graph_perfect_code.size(); aL = size;
+		int64 vertexCount = 5 * graph_perfect_code.size();
 
-		std::random_device device;
+		std::cout << graph_perfect_code << "\n\n";
 
-		std::mt19937 rng(device());
+		int64 size = graph_perfect_code.size(); aL = vertexCount;
 
-		std::uniform_int_distribution<unsigned int> dist(0, 1); // distribution in range [start, end]
+		dynamic_array<bool> available(vertexCount,true);
 
-		bool allow;
-
-		for (i = 0; i < size; ++i)
+		for (int64 i = 0; i < size; ++i)
 		{
-			for (j = i; j < size; ++j)
-			{
-				/*if (size <= 100)
-				{
-					allow = static_cast<bool>(dist(rng));
-				}
-				else if (size > 100 && size <= 200)
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng));
-				}
-				else if (size > 200 && size <= 300)
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng) * dist(rng));
-				}
-				else if (size > 300 && size <= 400)
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng) * dist(rng) * dist(rng));
-				}
-				else if (size > 400 && size <= 500)
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng) * dist(rng) * dist(rng) * dist(rng));
-				}
-				else if (size > 500 && size <= 600)
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng) * dist(rng) * dist(rng) * dist(rng) * dist(rng));
-				}
-				else
-				{
-					allow = static_cast<bool>(dist(rng) * dist(rng) * dist(rng) * dist(rng) * dist(rng) * dist(rng));
-				}*/
+			available[graph_perfect_code[i]] = false;
+		}
 
-				aL[i].push_back(j);
-				aL[j].push_back(i);
+		dynamic_array<int64> set; set.reserve(vertexCount - size);
+
+		for (int64 i = 0; i < vertexCount; ++i)
+		{
+			if (available[i])
+			{
+				set.push_back(i);
 			}
 		}
+
+		std::cout << set.size()<<" "<< size;
+
+		dynamic_array<dynamic_array<int64>> partition = my_partition(set, size);
+
+		set.shuffle();
+
+		for (int64 i = 0; i < size; ++i)
+		{
+			aL[graph_perfect_code[i]].push_back(graph_perfect_code[i]);
+
+			for (const auto& e : partition[i])
+			{
+				aL[graph_perfect_code[i]].push_back(e);
+
+				aL[e].push_back(graph_perfect_code[i]);
+			}
+		}
+
+		for (int64 i = 0; i < set.size(); ++i)
+		{
+			aL[set[i]].push_back(set[i]);
+
+			for (int64 j = 1; j < 4; ++j)
+			{
+				if (aL[set[i]].size() > 4) break;
+
+				aL[set[i]].push_back(set[(i + j) % set.size()]);
+
+				aL[set[(i + j) % set.size()]].push_back(set[i]);
+			}
+
+		}
+
+		//std::cout << aL;
 
 		int64 index = 0;
 
@@ -151,8 +183,8 @@ public:
 	void print()const 
 	{
 		int64 i = 0, j = 0, n = (int64)aL.size();
-		std::vector<bool> a; a.resize(n);
-		std::vector<std::vector<bool>> aM; aM.resize(n, a);
+		dynamic_array<bool> a(n,false);
+		dynamic_array<dynamic_array<bool>> aM(n, a);
 		for (const auto& L : aL) {
 			for (const auto& v : L)
 				aM[i][v] = 1;
