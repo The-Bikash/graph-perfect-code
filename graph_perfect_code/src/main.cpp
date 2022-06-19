@@ -106,6 +106,8 @@ int main()
 
 	std::cout << Alice.message(cipher_text);
 
+	
+	std::cin.get();
 	std::cin.get();
 
 	return 0;
